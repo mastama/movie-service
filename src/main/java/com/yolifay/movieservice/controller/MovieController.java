@@ -6,6 +6,7 @@ import com.yolifay.movieservice.service.MovieService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +19,12 @@ public class MovieController {
 
     @GetMapping
     public ResponseEntity<ResponseService> getAllMovies(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
-        return ResponseEntity.ok(movieService.getAllMovies(PageRequest.of(page, size)));
+        int zeroBased = Math.max(page - 1, 0);
+        Pageable pageable = PageRequest.of(zeroBased, size);
+        return ResponseEntity.ok(movieService.getAllMovies(pageable));
     }
 
     @PostMapping

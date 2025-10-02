@@ -4,6 +4,8 @@ import com.yolifay.movieservice.common.Constants;
 import com.yolifay.movieservice.common.ConstantsProperties;
 import com.yolifay.movieservice.common.ResponseService;
 import com.yolifay.movieservice.common.ResponseUtil;
+import com.yolifay.movieservice.dto.MovieDto;
+import com.yolifay.movieservice.dto.PageResponse;
 import com.yolifay.movieservice.entity.Movie;
 import com.yolifay.movieservice.exception.DataNotFoundException;
 import com.yolifay.movieservice.repository.MovieRepository;
@@ -37,16 +39,20 @@ public class MovieService {
     public ResponseService getAllMovies(Pageable pageable) {
         log.info("Start get all movies");
 
-        Page<Movie> movies = movieRepository.findAll(pageable);
+        Page<MovieDto> pageDto = movieRepository.findAll(pageable)
+                .map(this::toDto);
+
+        PageResponse<MovieDto> data = PageResponse.from(pageDto);
 
         log.info("End get all movies");
         return ResponseUtil.setResponse(
                 HttpStatus.OK.value(),
                 constantsProperties.getServiceId(),
                 Constants.RESPONSE.APPROVED,
-                movies
+                data
         );
     }
+
 
     public ResponseService getMovieById(Long id) {
         log.info("Start get movie by id {}", id);
@@ -97,4 +103,14 @@ public class MovieService {
                 "Movie berhasil dihapus"
         );
     }
+
+    private MovieDto toDto(Movie m) {
+        return MovieDto.builder()
+                .id(m.getId())
+                .title(m.getTitle())
+                .description(m.getDescription())
+                .releaseYear(m.getReleaseYear())
+                .build();
+    }
+
 }
