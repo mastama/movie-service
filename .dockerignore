@@ -1,0 +1,33 @@
+# Ignore target build directory (Maven)
+target/
+
+# Maven wrapper except jar
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+# IDE files
+.idea/
+*.iml
+*.iws
+.vscode/
+.fleet/
+
+# Temporary File directories
+tmp/
+temp/
+
+# Logs
+*.log
+
+# JUnit reports
+**/TEST*.xml
+
+# OS / system files
+.DS_Store
+Thumbs.db
+
+# Misc
+*.class
+rest-client/

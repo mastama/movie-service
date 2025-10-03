@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_DB: moviedb
+      POSTGRES_USER: mastama
+      POSTGRES_PASSWORD: post456
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mastama -d moviedb -h localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  movie-service:
+    build: .
+    container_name: movie-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/moviedb
+      SPRING_DATASOURCE_USERNAME: mastama
+      SPRING_DATASOURCE_PASSWORD: post456
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
